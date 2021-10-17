@@ -1,7 +1,8 @@
 const fs = require('fs');
 
+//takes the small name and an array to write a class
 function writeClass(name, roster) {
-    //might have to refractor to add karma systems but for now just sorting names
+    //might have to refractor to add karma systems etc. but for now just the roster
     try {
         fs.writeFileSync(`./classes/${name}.json`, JSON.stringify(roster));
     } catch(error) {
