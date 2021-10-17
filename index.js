@@ -1,6 +1,8 @@
 require('dotenv').config();
 const { Client, MessageEmbed, Intents, MessageButton } = require('discord.js');
 const fs = require('fs');
+const readline = require('readline');
+const {google} = require('googleapis');
 const getCards = require('quizlet-fetcher');
 const paginationEmbed = require('discordjs-button-pagination');
 const db = require('./db.js');
