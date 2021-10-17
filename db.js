@@ -20,4 +20,13 @@ function getClass(name) {
     return c;
 }
 
-module.exports = { writeClass, getClass }
+function getAllClasses() {
+    let classes = [];
+    let dir = fs.readdirSync('./classes');
+    dir.forEach(c => {
+        classes.push(JSON.parse(fs.readFileSync(`./classes/${c}`, 'utf8')));
+    })
+    return classes;
+}
+
+module.exports = { writeClass, getClass, getAllClasses }

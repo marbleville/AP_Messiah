@@ -38,7 +38,7 @@ bot.on('interactionCreate', interaction => {
             case 'help':
                 const Embed = new MessageEmbed()
                     .setTitle('**Help Page:**')
-                    .addField('**Commands**', '/help\nand more comeing!')
+                    .addField('**Commands**', '/help\nand more coming!')
                 interaction.reply({ embeds: [Embed] } );
             break;
 
@@ -54,7 +54,7 @@ bot.on('interactionCreate', interaction => {
                 interaction.reply(`Removed from **${roles[interaction.options._hoistedOptions[0].value].name}**.`);
             break;
 
-            case 'clesses':
+            case 'classes':
                 //I need db support here
             break;
         }
