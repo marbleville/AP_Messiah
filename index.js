@@ -109,7 +109,9 @@ bot.on('interactionCreate', interaction => {
                 const Embed3 = new MessageEmbed()
                     .setTitle('**Info about AP Discord Server**')
                     .addField('Get Help:', 'This server serves as a hub for study materials and help from fellow AP students.')
-                    .addField('Features:', 'This bot tracks students in this server of all AP classes offered by MHS with `/classes`, `/enroll`, and `/unenroll`. ')
+                    .addField('Features:', 'This bot tracks students in this server of all AP classes offered by MHS with `/classes`, `/enroll`, and `/unenroll`. It also keeps track of different study materials that members have posted with `/study`')
+                    .addField('\u200B', 'Bot written by <@464156671024037918>. AP Discord Server managed by <@703028154431832094>. Credit for original idea goes to <@371318217454387211>. ')
+                interaction.reply({ embeds: [Embed3] });
             break;
         }
     }
