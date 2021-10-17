@@ -12,10 +12,12 @@ function writeClass(name, roster) {
 
 function getClass(name) {
     let c = undefined;
-    fs.readdirSync().forEach(file => {
+    fs.readdirSync('./classes').forEach(file => {
         if (file === name) {
             c = JSON.parse(fs.readFileSync(`./classes/${file}`, 'utf8'));
         }
     })
     return c;
 }
+
+module.exports = { writeClass, getClass }
