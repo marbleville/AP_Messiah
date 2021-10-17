@@ -1,13 +1,17 @@
 require('dotenv').config();
 const { Client, MessageEmbed, Intents, MessageButton } = require('discord.js');
+const fs = require('fs');
 const getCards = require('quizlet-fetcher');
+const paginationEmbed = require('discordjs-button-pagination');
 const db = require('./db.js');
 const bot = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, 
     Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES] });
 const token = process.env.TOKEN;
 
+const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+
 const roles = {
-    stat:    { name: 'AP Statistics', id: '' },
+    stat:    { name: 'AP Statistics', id: '899345588477390909' },
     calc:    { name: 'AP Calculus AB/BC', id: '' },
     csa:     { name: 'AP Computer Science A', id: '' },
     csp:     { name: 'AP Computer Science Principles', id: '' },
@@ -45,6 +49,9 @@ bot.on('interactionCreate', interaction => {
             case 'enroll':
                 let m = interaction.guild.members.cache.get(interaction.user.id);
                 m.roles.add(interaction.guild.roles.cache.find((r) => r.id === roles[interaction.options._hoistedOptions[0].value].id));
+                let c = db.getClass(interaction.options._hoistedOptions[0].value);
+                c.push(interaction.user.id.toString());
+                db.writeClass(interaction.options._hoistedOptions[0].value, c);
                 interaction.reply(`Added to **${roles[interaction.options._hoistedOptions[0].value].name}**.`);
             break;
 
@@ -55,9 +62,30 @@ bot.on('interactionCreate', interaction => {
             break;
 
             case 'classes':
-                //I need db support here
                 let classes = db.getAllClasses();
-                //how to paginate embeds
+                let pages = [];
+                classes.forEach(c => {
+                    let Embed2 = new MessageEmbed()
+                        .setTitle(c.name)
+                        let s = '';
+                        c.roster.forEach(student => {
+                            s += `<@${student}>\n`;
+                        })
+                        .addField('Roster:', s);
+                    pages.push(Embed2);
+                })
+                const button1 = new MessageButton()
+                    .setCustomId("previousbtn")
+                    .setLabel("Previous")
+                    .setStyle("DANGER");
+
+                const button2 = new MessageButton()
+                    .setCustomId("nextbtn")
+                    .setLabel("Next")
+                    .setStyle("SUCCESS");
+                const buttonList = [button1, button2];
+                const timeout = config.paginationTimeout;
+                paginationEmbed(message, pages, buttonList, timeout);
             break;
         }
     }
