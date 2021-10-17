@@ -58,6 +58,9 @@ bot.on('interactionCreate', interaction => {
             case 'unenroll':
                 let g = interaction.guild.members.cache.get(interaction.user.id);
                 g.roles.remove(interaction.guild.roles.cache.find((r) => r.id === roles[interaction.options._hoistedOptions[0].value].id));
+                let temp = db.getClass(interaction.options._hoistedOptions[0].value);
+                let rmv = temp.splice(temp.indexOf(interaction.user.id), 1);
+                db.writeClass(interaction.options._hoistedOptions[0].value, temp);
                 interaction.reply(`Removed from **${roles[interaction.options._hoistedOptions[0].value].name}**.`);
             break;
 
