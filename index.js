@@ -56,6 +56,8 @@ bot.on('interactionCreate', interaction => {
 
             case 'classes':
                 //I need db support here
+                let classes = db.getAllClasses();
+                //how to paginate embeds
             break;
         }
     }
