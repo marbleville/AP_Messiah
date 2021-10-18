@@ -45,9 +45,13 @@ bot.on('interactionCreate', interaction => {
 	if (interaction.isCommand()) {
         switch (interaction.commandName) {
             case 'help':
+                let s = '';
+                fs.readdirSync('./commands').forEach(file => {
+                    s += `/${file.split('.')[0]}\n`
+                })
                 const Embed = new MessageEmbed()
                     .setTitle('**Help Page:**')
-                    .addField('**Commands**', '/help\n/enroll\n/unenroll\n/info')
+                    .addField('**Commands**', s)
                     .setColor('BLURPLE')
                     .addField('\u200B', 'https://github.com/marbleville/AP_Messiah\nPlease report any bugs with the bot to <@464156671024037918>.')
                 interaction.reply({ embeds: [Embed] } );
@@ -115,9 +119,9 @@ bot.on('interactionCreate', interaction => {
             case 'info':
                 const Embed3 = new MessageEmbed()
                     .setTitle('**Info about AP Discord Server**')
-                    .addField('Get Help:', 'This server serves as a hub for study materials and help from fellow AP students.')
+                    .addField('Get Help:', 'Class of 2022 Advanced Placement Discord server serves as a hub for study materials and help from fellow AP students.')
                     .addField('Features:', 'This bot tracks students in this server of all AP classes offered by MHS with `/classes`, `/enroll`, and `/unenroll`. It also keeps track of different study materials that members have posted with `/study`')
-                    .addField('\u200B', 'AP Discord Server managed by <@703028154431832094>. Bot written by <@464156671024037918>. Credit for original idea goes to <@371318217454387211>. ')
+                    .addField('\u200B', 'Class of 2022 Advanced Placement managed by <@703028154431832094>. Bot written by <@464156671024037918>. Credit for original idea goes to <@371318217454387211>. ')
                 interaction.reply({ embeds: [Embed3] });
             break;
 
@@ -160,7 +164,7 @@ bot.on('interactionCreate', interaction => {
                     paginationEmbed(interaction, pages1, buttonList1, timeout1);
                 } else if (interaction.options._subcommand === 'study') {
                     try {
-                        interaction.reply('Sorry but this feature is not working :(')
+                        interaction.reply('Sorry but this feature is not working :( (Blame Quizlet for being dumb)')
                     } catch(error) {
                         console.log(error);
                     }

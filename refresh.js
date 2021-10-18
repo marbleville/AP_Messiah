@@ -9,7 +9,7 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 
 // Place your client and guild ids here
 const clientId = '898547782216986634';
-const guildId = '816706810059948052';
+const guildId = '899501718025416714'; //updated to AP discord
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
