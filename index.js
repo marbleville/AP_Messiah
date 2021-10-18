@@ -38,6 +38,10 @@ bot.on('ready', () => {
     console.log('Bot Online!')
 })
 
+bot.on('messageCreate', message => {
+    
+})
+
 bot.on('interactionCreate', interaction => {
 	if (interaction.isCommand()) {
         switch (interaction.commandName) {
@@ -53,12 +57,16 @@ bot.on('interactionCreate', interaction => {
             case 'enroll':
                 let m = interaction.guild.members.cache.get(interaction.user.id);
                 //adds proper role to user
-                m.roles.add(interaction.guild.roles.cache.find((r) => r.id === roles[interaction.options._hoistedOptions[0].value].id));
-                //gets and updates the class roster
-                let c = db.getClass(interaction.options._hoistedOptions[0].value);
-                c.push(interaction.user.id.toString());
-                db.writeClass(interaction.options._hoistedOptions[0].value, c);
-                interaction.reply(`Added to **${roles[interaction.options._hoistedOptions[0].value].name}**.`);
+                if (!message.member.roles.cache.some(role => role.id === roles[interaction.options._hoistedOptions[0].value].id)) {
+                    m.roles.add(interaction.guild.roles.cache.find((r) => r.id === roles[interaction.options._hoistedOptions[0].value].id));
+                    //gets and updates the class roster
+                    let c = db.getClass(interaction.options._hoistedOptions[0].value);
+                    c.push(interaction.user.id.toString());
+                    db.writeClass(interaction.options._hoistedOptions[0].value, c);
+                    interaction.reply(`Added to **${roles[interaction.options._hoistedOptions[0].value].name}**.`);
+                } else {
+                    interaction.reply('You are already innn this class.')
+                }
             break;
 
             case 'unenroll':
@@ -123,7 +131,7 @@ bot.on('interactionCreate', interaction => {
                 }
             break;
 
-            
+
         }
     }
 });
