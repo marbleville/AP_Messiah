@@ -73,21 +73,26 @@ bot.on('interactionCreate', interaction => {
                     let c = db.getClass(interaction.options._hoistedOptions[0].value);
                     c.push(interaction.user.id.toString());
                     db.writeClass(interaction.options._hoistedOptions[0].value, c);
-                    interaction.reply(`Added to **${roles[interaction.options._hoistedOptions[0].value].name}**.`);
+                    interaction.reply({ content: `Added to **${roles[interaction.options._hoistedOptions[0].value].name}**.`, ephemeral: true});
                 } else {
-                    interaction.reply('You are already innn this class.')
+                    interaction.reply({ content: 'You are already in this class.', ephemeral: true })
                 }
             break;
 
             case 'unenroll':
                 let g = interaction.guild.members.cache.get(interaction.user.id);
-                //removes role 
-                g.roles.remove(interaction.guild.roles.cache.find((r) => r.id === roles[interaction.options._hoistedOptions[0].value].id));
-                //accesses and spliced out the unenrolled user
-                let temp = db.getClass(interaction.options._hoistedOptions[0].value);
-                let rmv = temp.splice(temp.indexOf(interaction.user.id), 1);
-                db.writeClass(interaction.options._hoistedOptions[0].value, temp);
-                interaction.reply(`Removed from **${roles[interaction.options._hoistedOptions[0].value].name}**.`);
+                //removes role
+                if (interaction.member.roles.cache.some(role => role.id === roles[interaction.options._hoistedOptions[0].value].id)) {
+                    g.roles.remove(interaction.guild.roles.cache.find((r) => r.id === roles[interaction.options._hoistedOptions[0].value].id));
+                    //accesses and spliced out the unenrolled user
+                    let temp = db.getClass(interaction.options._hoistedOptions[0].value);
+                    let rmv = temp.splice(temp.indexOf(interaction.user.id), 1);
+                    db.writeClass(interaction.options._hoistedOptions[0].value, temp);
+                    interaction.reply({ content: `Removed from **${roles[interaction.options._hoistedOptions[0].value].name}**.`, ephemeral: true });
+                } else {
+                    interaction.reply({ content: 'You are not in this class.', ephemeral: true })
+                }
+                
             break;
 
             case 'classes':
