@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/rest": "^0.1.0-canary.0",
+    "@nlpjs/neural": "^4.21.1",
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.2.0",
     "discordjs-button-pagination": "^2.0.1",

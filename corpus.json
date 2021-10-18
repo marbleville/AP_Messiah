@@ -1,0 +1,46 @@
+[
+    {
+      "input": { "I": 1, "need": 1, "help": 1 },
+      "output": { "help": 1 }
+    },
+    {
+      "input": { "help": 1, "me": 1 },
+      "output": { "help": 1 }
+    },
+    {
+      "input": { "help": 1 },
+      "output": { "help": 1 }
+    },
+    {
+      "input": { "can": 1, "you": 1, "help": 1, "me": 1 },
+      "output": { "help": 1 }
+    },
+    {
+      "input": { "I": 1, "want": 1, "help": 1 },
+      "output": { "help": 1 }
+    },
+    {
+      "input": { "will": 1, "you": 1, "help": 1, "me": 1 },
+      "output": { "help": 1 }
+    },
+    {
+      "input": { "I": 1, "can": 1, "help": 1 },
+      "output": { "give": 1 }
+    },
+    {
+      "input": { "I": 1, "will": 1, "help": 1 },
+      "output": { "give": 1 }
+    },
+    {
+      "input": { "I'll": 1, "help": 1, "you": 1 },
+      "output": { "give": 1 }
+    },
+    {
+        "input": { "do": 1, "you": 1, "need": 1, "help": 1 },
+        "output": { "give": 1 }
+    },
+    {
+        "input": { "who": 1, "needs": 1, "help": 1 },
+        "output": { "give": 1 }
+    }
+  ]

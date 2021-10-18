@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Client, MessageEmbed, Intents, MessageButton, CommandInteractionOptionResolver } = require('discord.js');
+const { NeuralNetwork } = require('@nlpjs/neural');
 const fs = require('fs');
 const paginationEmbed = require('discordjs-button-pagination');
 const db = require('./db.js');
@@ -9,8 +10,18 @@ const token = process.env.TOKEN;
 
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
+// const corpus = require('./corpus.json');
+// let net = new NeuralNetwork();
+// net.train(corpus);
+// const exported = net.toJSON();
+// fs.writeFileSync('./model.json', JSON.stringify(exported));
 
-//makes trakcinng roles and full names easier
+let net = new NeuralNetwork();
+net.fromJSON(JSON.parse(fs.readFileSync('./model.json')));
+console.log(net.run({ I: 1, help: 1 }));
+
+
+//makes tracking roles and full names easier
 const roles = {
     stat:    { name: 'AP Statistics', id: '899703948196327504' },
     calc:    { name: 'AP Calculus AB/BC', id: '899703957662892092' },
@@ -45,7 +56,15 @@ bot.on('ready', () => {
 })
 
 bot.on('messageCreate', message => {
-
+    let m = {};
+    let o = message.content.split(' ');
+    o.forEach(element => {
+        m[element] = 1;
+    })
+    let h = net.run(m);
+    if (h.help > 0.8 && h.give < 0.2) {
+        //function here
+    }
 })
 
 bot.on('interactionCreate', interaction => {
