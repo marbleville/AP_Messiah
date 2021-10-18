@@ -13,7 +13,7 @@ function writeClass(name, roster) {
 function getClass(name) {
     let c = [];
     try {
-        c = JSON.parse(fs.readFileSync(`./classes/${file}.json`, 'utf8'));
+        c = JSON.parse(fs.readFileSync(`./classes/${name}.json`, 'utf8'));
     } catch(error) {
         console.log(error);
     }
