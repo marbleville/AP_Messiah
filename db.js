@@ -13,11 +13,7 @@ function writeClass(name, roster) {
 function getClass(name) {
     let c = [];
     try {
-        fs.readdirSync('./classes').forEach(file => {
-            if (file === `${name}.json`) {
-                c = JSON.parse(fs.readFileSync(`./classes/${file}`, 'utf8'));
-            }
-        })
+        c = JSON.parse(fs.readFileSync(`./classes/${file}.json`, 'utf8'));
     } catch(error) {
         console.log(error);
     }
@@ -27,14 +23,36 @@ function getClass(name) {
 function getAllClasses() {
     let classes = [];
     try {
-        let dir = fs.readdirSync('./classes');
-        dir.forEach(c => {
-            classes.push({name: c, roster: JSON.parse(fs.readFileSync(`./classes/${c}`, 'utf8')) });
-        })
+        classes.push({name: c, roster: JSON.parse(fs.readFileSync(`./classes/${c}.json`, 'utf8')) });
     } catch(error) {
         console.log(error);
     }   
     return classes;
 }
 
-module.exports = { writeClass, getClass, getAllClasses }
+function writeQuizlet(c, link) {
+    try { 
+        let links = JSON.parse(fs.readFileSync(`./materials/${c}.json`, 'utf8'));
+        links.push({name: link.split('/')[5], link: link});
+        fs.writeFileSync(`./materials/${c}.json`, JSON.stringify(links));
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+function getQuizletLink(c, name) {
+    let link = '';
+    try {
+        let links = JSON.parse(`./materials/${c}.json`, 'utf8');
+        links.forEach(l => {
+            if (l.name === name) {
+                link = l.link;
+            }
+        return link;
+        })
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+module.exports = { writeClass, getClass, getAllClasses, writeQuizlet, getQuizletLink }

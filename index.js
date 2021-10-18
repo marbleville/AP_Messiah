@@ -1,8 +1,6 @@
 require('dotenv').config();
 const { Client, MessageEmbed, Intents, MessageButton } = require('discord.js');
 const fs = require('fs');
-const readline = require('readline');
-const {google} = require('googleapis');
 const getCards = require('quizlet-fetcher');
 const paginationEmbed = require('discordjs-button-pagination');
 const db = require('./db.js');
@@ -115,6 +113,17 @@ bot.on('interactionCreate', interaction => {
                     .addField('\u200B', 'AP Discord Server managed by <@703028154431832094>. Bot written by <@464156671024037918>. Credit for original idea goes to <@371318217454387211>. ')
                 interaction.reply({ embeds: [Embed3] });
             break;
+
+            case 'addquizlet':
+                if (!/^(http|https):\/\/quizlet.com\/[^ "]+$/.test(interaction.options._hoistedOptions[1].value)) {
+                    interaction.reply('Please provide a link to a Quizlet study set.');
+                } else {
+                    db.writeQuizlet(interaction.options._hoistedOptions[0].value, interaction.options._hoistedOptions[1].value);
+                    interaction.reply(`Quizlet saved for **${roles[interaction.options._hoistedOptions[0].value].name}** as **${interaction.options._hoistedOptions[1].value.split('/')[5]}**.`)
+                }
+            break;
+
+            
         }
     }
 });
