@@ -1,1 +1,1 @@
-{ "paginationTimeout": 20000 }
+{ "paginationTimeout": 20000, "quizletLinkPageLength": 5, "quizletTimer": 300000 }

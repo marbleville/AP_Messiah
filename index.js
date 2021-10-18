@@ -1,15 +1,14 @@
 require('dotenv').config();
-const { Client, MessageEmbed, Intents, MessageButton } = require('discord.js');
+const { Client, MessageEmbed, Intents, MessageButton, CommandInteractionOptionResolver } = require('discord.js');
 const fs = require('fs');
-const getCards = require('quizlet-fetcher');
 const paginationEmbed = require('discordjs-button-pagination');
 const db = require('./db.js');
 const bot = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, 
     Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES] });
 const token = process.env.TOKEN;
 
-//cause why not?
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+
 
 //makes trakcinng roles and full names easier
 const roles = {
@@ -39,7 +38,7 @@ bot.on('ready', () => {
 })
 
 bot.on('messageCreate', message => {
-    
+
 })
 
 bot.on('interactionCreate', interaction => {
@@ -83,7 +82,7 @@ bot.on('interactionCreate', interaction => {
             case 'classes':
                 let classes = db.getAllClasses();
                 let pages = [];
-                //adds all clas rosters to the array
+                //adds all class rosters to the array
                 classes.forEach(c => {
                     let Embed2 = new MessageEmbed()
                         .setTitle(roles[c.name.split('.')[0]].name)
@@ -131,9 +130,55 @@ bot.on('interactionCreate', interaction => {
                 }
             break;
 
+            case 'getquizlet':
+                if (interaction.options._subcommand === 'list') {
+                    let pages1 = [];
+                    let names = db.getQuizletLinks(interaction.options._hoistedOptions[0].value).chunk_inefficient(config.quizletLinkPageLength);
+                    names.forEach(n => {
+                        let s = '';
+                        //makes a string with names and links for all quizlet so you cann look at them inn the browser as well
+                        n.forEach(f => s += `**${f.split('/')[f.split('/').length - 2]}:** ${f}\n`);
+                        const Embed4 = new MessageEmbed()
+                            .setTitle(`Quizlets for ${roles[interaction.options._hoistedOptions[0].value].name}`)
+                            .setColor('BLURPLE')
+                            .addField('Quizlets:', s)
+                        pages1.push(Embed4);
+                    })
+                    //interactions for fancy
+                    const button3 = new MessageButton()
+                        .setCustomId("previousbtn")
+                        .setLabel("Previous")
+                        .setStyle("DANGER");
 
+                    const button4 = new MessageButton()
+                        .setCustomId("nextbtn")
+                        .setLabel("Next")
+                        .setStyle("SUCCESS");
+                    const buttonList1 = [button3, button4];
+                    const timeout1 = config.paginationTimeout;
+                    //npm module to do this easily
+                    paginationEmbed(interaction, pages1, buttonList1, timeout1);
+                } else if (interaction.options._subcommand === 'study') {
+                    try {
+                        interaction.reply('Sorry but this feature is not working :(')
+                    } catch(error) {
+                        console.log(error);
+                    }
+                }   
+            break;
         }
     }
 });
+
+Object.defineProperty(Array.prototype, 'chunk_inefficient', {
+    value: function(chunkSize) {
+      var array = this;
+      return [].concat.apply([],
+        array.map(function(elem, i) {
+          return i % chunkSize ? [] : [array.slice(i, i + chunkSize)];
+        })
+      );
+    }
+  });
 
 bot.login(token);

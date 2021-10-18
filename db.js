@@ -33,7 +33,7 @@ function getAllClasses() {
 function writeQuizlet(c, link) {
     try { 
         let links = JSON.parse(fs.readFileSync(`./materials/${c}.json`, 'utf8'));
-        links.push({name: link.split('/')[5], link: link});
+        links.push({name: link.split('/')[link.split('/').length - 2], link: link});
         fs.writeFileSync(`./materials/${c}.json`, JSON.stringify(links));
     } catch(error) {
         console.log(error);
@@ -43,16 +43,29 @@ function writeQuizlet(c, link) {
 function getQuizletLink(c, name) {
     let link = '';
     try {
-        let links = JSON.parse(`./materials/${c}.json`, 'utf8');
+        let links = JSON.parse(fs.readFileSync(`./materials/${c}.json`, 'utf8'));
         links.forEach(l => {
             if (l.name === name) {
                 link = l.link;
             }
-        return link;
         })
+        return link;
     } catch(error) {
         console.log(error);
     }
 }
 
-module.exports = { writeClass, getClass, getAllClasses, writeQuizlet, getQuizletLink }
+function getQuizletLinks(c) {
+    let l = [];
+    try {
+        let links = JSON.parse(fs.readFileSync(`./materials/${c}.json`, 'utf8'));
+        links.forEach(n => {
+            l.push(n.link);
+        })
+        return l;
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+module.exports = { writeClass, getClass, getAllClasses, writeQuizlet, getQuizletLink, getQuizletLinks }
