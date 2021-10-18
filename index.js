@@ -18,8 +18,6 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 let net = new NeuralNetwork();
 net.fromJSON(JSON.parse(fs.readFileSync('./model.json')));
-console.log(net.run({ I: 1, help: 1 }));
-
 
 //makes tracking roles and full names easier
 const roles = {
@@ -57,13 +55,22 @@ bot.on('ready', () => {
 
 bot.on('messageCreate', message => {
     let m = {};
-    let o = message.content.split(' ');
+    let o = message.content.toLowerCase().split(' ');
     o.forEach(element => {
         m[element] = 1;
     })
     let h = net.run(m);
     if (h.help > 0.8 && h.give < 0.2) {
-        //function here
+        let l = ['https://discordapp.com/channels', '/', '<server-id>', '/', '<channel-id>', '/', '<message-id>'];
+        l[2] = message.guild.id;
+        l[4] = message.channel.id;
+        l[6] = message.id;
+        const embed = new MessageEmbed()
+            .setTitle('**Help Needed:**')
+            .addField(`\u200B`, `**<@${message.author.id}> might need help:**\n` + '`' + message.content + '`')
+            .addField('**Link:**', l.join(''))
+            .setColor('RED')
+        bot.channels.cache.get('899721719105847326').send({embeds: [embed]});
     }
 })
 
