@@ -45,9 +45,9 @@ bot.on('interactionCreate', interaction => {
 	if (interaction.isCommand()) {
         switch (interaction.commandName) {
             case 'help':
-                let s = '';
+                let p = '';
                 fs.readdirSync('./commands').forEach(file => {
-                    s += `/${file.split('.')[0]}\n`
+                    p += `/${file.split('.')[0]}\n`
                 })
                 const Embed = new MessageEmbed()
                     .setTitle('**Help Page:**')
