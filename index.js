@@ -12,24 +12,24 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 //makes trakcinng roles and full names easier
 const roles = {
-    stat:    { name: 'AP Statistics', id: '899345588477390909' },
-    calc:    { name: 'AP Calculus AB/BC', id: '' },
-    csa:     { name: 'AP Computer Science A', id: '' },
-    csp:     { name: 'AP Computer Science Principles', id: '' },
-    phys:    { name: 'AP Physics', id: '' },
-    bio:     { name: 'AP Biology', id: '' },
-    chem:    { name: 'AP Chemistry', id: '' },
-    enviro:  { name: 'AP Environmental Science', id: '' },
-    lang:    { name: 'AP Language and Composition', id: '' },
-    lit:     { name: 'AP Literature and Composition', id: '' },
-    gov:     { name: 'AP Government and Politics', id: '' },
-    euro:    { name: 'AP European History', id: '' },
-    apush:   { name: 'AP US History', id: '' },
-    arthist: { name: 'AP Art History', id: '' },
-    spqr:    { name: 'AP Latin', id: '' },
-    span:    { name: 'AP Spanish', id: '' },
-    frank:   { name: 'AP French', id: '' },
-    music:   { name: 'AP Music Theory', id: '' }
+    stat:    { name: 'AP Statistics', id: '899703948196327504' },
+    calc:    { name: 'AP Calculus AB/BC', id: '899703957662892092' },
+    csa:     { name: 'AP Computer Science A', id: '899703958661136465' },
+    csp:     { name: 'AP Computer Science Principles', id: '899703959483207722' },
+    phys:    { name: 'AP Physics', id: '899703960137510943' },
+    bio:     { name: 'AP Biology', id: '899703960615653418' },
+    chem:    { name: 'AP Chemistry', id: '899703961563582534' },
+    enviro:  { name: 'AP Environmental Science', id: '899703962293399602' },
+    lang:    { name: 'AP Language and Composition', id: '899703963337756732' },
+    lit:     { name: 'AP Literature and Composition', id: '899703963752992878' },
+    gov:     { name: 'AP Government and Politics', id: '899704404326879232' },
+    euro:    { name: 'AP European History', id: '899704404964433930' },
+    apush:   { name: 'AP US History', id: '899704405455175730' },
+    arthist: { name: 'AP Art History', id: '899704406709268480' },
+    spqr:    { name: 'AP Latin', id: '899704407099326587' },
+    span:    { name: 'AP Spanish', id: '899704407913005098' },
+    frank:   { name: 'AP French', id: '899704749224509471' },
+    music:   { name: 'AP Music Theory', id: '899704749224509471' }
 }
 
 bot.on('ready', () => {
