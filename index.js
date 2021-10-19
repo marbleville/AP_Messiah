@@ -122,8 +122,9 @@ bot.on('interactionCreate', interaction => {
                 })
                 const Embed = new MessageEmbed()
                     .setTitle('**Help Page:**')
-                    .addField('**Commands**', s)
+                    .addField('**Commands**', p)
                     .setColor('BLURPLE')
+                    .setThumbnail(bot.user.avatarURL())
                     .addField('\u200B', 'https://github.com/marbleville/AP_Messiah\nPlease report any bugs with the bot to <@464156671024037918>.')
                 interaction.reply({ embeds: [Embed] } );
             break;
@@ -134,9 +135,9 @@ bot.on('interactionCreate', interaction => {
                 if (!interaction.member.roles.cache.some(role => role.id === roles[interaction.options._hoistedOptions[0].value].id)) {
                     m.roles.add(interaction.guild.roles.cache.find((r) => r.id === roles[interaction.options._hoistedOptions[0].value].id));
                     //gets and updates the class roster
-                    let c = db.getClass(interaction.options._hoistedOptions[0].value);
-                    c.push(interaction.user.id.toString());
-                    db.writeClass(interaction.options._hoistedOptions[0].value, c);
+                    let d = db.getClass(interaction.options._hoistedOptions[0].value);
+                    d.push(interaction.user.id.toString());
+                    db.writeClass(interaction.options._hoistedOptions[0].value, d);
                     interaction.reply({ content: `Added to **${roles[interaction.options._hoistedOptions[0].value].name}**.`, ephemeral: true});
                 } else {
                     interaction.reply({ content: 'You are already in this class.', ephemeral: true })
@@ -197,10 +198,29 @@ bot.on('interactionCreate', interaction => {
                     //add paginnation with stats on server
                     const Embed3 = new MessageEmbed()
                         .setTitle('**Info about AP Discord Server**')
+                        .setColor('BLURPLE')
                         .addField('Get Help:', 'Class of 2022 Advanced Placement Discord server serves as a hub for study materials and help from fellow AP students.')
                         .addField('Features:', 'This bot tracks students in this server of all AP classes offered by MHS with `/classes`, `/enroll`, and `/unenroll`. It also keeps track of different study materials that members have posted with `/quizlet`.')
                         .addField('\u200B', 'Class of 2022 Advanced Placement managed by <@703028154431832094>. Bot written by <@464156671024037918>. Credit for original idea goes to <@371318217454387211>. ')
-                    interaction.reply({ embeds: [Embed3] });
+                    const statEmbed = new MessageEmbed()
+                        .setTitle('**Server Statistics**')
+                        .setColor('BLURPLE')
+                        .addField('**Member Count:**', `${interaction.guild.memberCount} scholars`)
+                        .addField('**Class List:**', fs.readdirSync('./classes').reduce((acc, cur) => acc + `${roles[cur.split('.')[0]].name}\n`, ''))
+
+                    const statBtn = new MessageButton()
+                        .setCustomId("previousbtn")
+                        .setLabel("Back")
+                        .setStyle("DANGER");
+
+                    const statBtn2 = new MessageButton()
+                        .setCustomId("nextbtn")
+                        .setLabel("See Stats")
+                        .setStyle("SUCCESS");
+                    let embeds = [Embed3, statEmbed]
+                    const buttonList1 = [statBtn, statBtn2];
+                    const t1 = config.paginationTimeout;
+                    paginationEmbed(interaction, embeds, buttonList1, t1);
                 } else if (interaction.options._subcommand === 'user') {
                     let name = '';
                     if (interaction.options._hoistedOptions[0].member.nickname != undefined) {
@@ -213,7 +233,7 @@ bot.on('interactionCreate', interaction => {
                         .setColor('BLURPLE')
                         .addField('Join Rank:', `**${name}** was the ${getJoinRank(interaction.options._hoistedOptions[0].value, interaction.guild)} user to join on ${interaction.options._hoistedOptions[0].member.joinedAt.toString().slice(0, 15)}.`)
                         //add feild here with karma info shizzle
-                    interaction.reply({embeds: [embed]});
+                    interaction.reply({ embeds: [embed] });
                 }
             break;
 
