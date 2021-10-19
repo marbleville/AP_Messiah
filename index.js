@@ -19,6 +19,9 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 let net = new NeuralNetwork();
 net.fromJSON(JSON.parse(fs.readFileSync('./model.json')));
 
+let c = fs.readdirSync('./classes');
+let mat = fs.readdirSync('./materials');
+
 //makes tracking roles and full names easier
 const roles = {
     stat:    { name: 'AP Statistics', id: '899703948196327504' },
@@ -96,14 +99,11 @@ bot.on('messageCreate', message => {
     })
     let h = net.run(m);
     if (h.help > 0.8 && h.give < 0.2) {
-        let l = ['https://discordapp.com/channels', '/', '<server-id>', '/', '<channel-id>', '/', '<message-id>'];
-        l[2] = message.guild.id;
-        l[4] = message.channel.id;
-        l[6] = message.id;
+        let l = `https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`
         const embed = new MessageEmbed()
             .setTitle('**Help Needed:**')
             .addField(`\u200B`, `**<@${message.author.id}> might need help:**\n` + '`' + message.content + '`')
-            .addField('**Link:**', l.join(''))
+            .addField('**Link:**', l)
             .setColor('RED')
         bot.channels.cache.get('899721719105847326').send({embeds: [embed]});
     }
@@ -198,16 +198,7 @@ bot.on('interactionCreate', interaction => {
                 interaction.reply({ embeds: [Embed3] });
             break;
 
-            case 'addquizlet':
-                if (!/^(http|https):\/\/quizlet.com\/[^ "]+$/.test(interaction.options._hoistedOptions[1].value)) {
-                    interaction.reply('Please provide a link to a Quizlet study set.');
-                } else {
-                    db.writeQuizlet(interaction.options._hoistedOptions[0].value, interaction.options._hoistedOptions[1].value);
-                    interaction.reply(`Quizlet saved for **${roles[interaction.options._hoistedOptions[0].value].name}** as **${interaction.options._hoistedOptions[1].value.split('/')[interaction.options._hoistedOptions[1].value.split('/').length - 2]}**.`)
-                }
-            break;
-
-            case 'getquizlet':
+            case 'quizlet':
                 if (interaction.options._subcommand === 'list') {
                     let pages1 = [];
                     let names = db.getQuizletLinks(interaction.options._hoistedOptions[0].value).chunk_inefficient(config.quizletLinkPageLength);
@@ -234,6 +225,14 @@ bot.on('interactionCreate', interaction => {
                     const buttonList1 = [button3, button4];
                     const timeout1 = config.paginationTimeout;
                     //npm module to do this easily
+                    if (pages1[0] === undefined) {
+                        //protection for no links
+                        const Embed4 = new MessageEmbed()
+                            .setTitle(`Quizlets for ${roles[interaction.options._hoistedOptions[0].value].name}`)
+                            .setColor('BLURPLE')
+                            .addField('Quizlets:', 'Sorry no Quizlets yet for this class.')
+                        pages1.push(Embed4);
+                    }
                     paginationEmbed(interaction, pages1, buttonList1, timeout1);
                 } else if (interaction.options._subcommand === 'study') {
                     try {
@@ -241,7 +240,14 @@ bot.on('interactionCreate', interaction => {
                     } catch(error) {
                         console.log(error);
                     }
-                }   
+                } else if (interaction.options._subcommand === 'add') {
+                    if (!/^(http|https):\/\/quizlet.com\/[^ "]+$/.test(interaction.options._hoistedOptions[1].value)) {
+                        interaction.reply({content: 'Please provide a valid link to a Quizlet study set.', ephemeral: true});
+                    } else {
+                        db.writeQuizlet(interaction.options._hoistedOptions[0].value, interaction.options._hoistedOptions[1].value);
+                        interaction.reply(`Quizlet saved for **${roles[interaction.options._hoistedOptions[0].value].name}** as **${interaction.options._hoistedOptions[1].value.split('/')[interaction.options._hoistedOptions[1].value.split('/').length - 2]}**.`)
+                    }
+                }
             break;
         }
     }
