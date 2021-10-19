@@ -1,14 +1,17 @@
 require('dotenv').config();
-const { Client, MessageEmbed, Intents, MessageButton, CommandInteractionOptionResolver } = require('discord.js');
+const { Client, MessageEmbed, Intents, MessageButton } = require('discord.js');
 const { NeuralNetwork } = require('@nlpjs/neural');
 const fs = require('fs');
 const paginationEmbed = require('discordjs-button-pagination');
 const db = require('./db.js');
+const { Interaction } = require('discord.js');
 const bot = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, 
     Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES] });
 const token = process.env.TOKEN;
 
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+
+
 
 // const corpus = require('./corpus.json');
 // let net = new NeuralNetwork();
@@ -190,7 +193,6 @@ bot.on('interactionCreate', interaction => {
             break;
 
             case 'info':
-                console.log(interaction.options);
                 if (interaction.options._subcommand === 'server') {
                     //add paginnation with stats on server
                     const Embed3 = new MessageEmbed()
@@ -208,8 +210,10 @@ bot.on('interactionCreate', interaction => {
                     }
                     const embed = new MessageEmbed()
                         .setTitle(`**${name}** information`)
-                        .addField('Join Rank:', `${name} was the ${getJoinRank(interaction.options._hoistedOptions[0].value, interaction.guild)} user to join on ${interaction.options._hoistedOptions[0].member.joinedAt.toString().slice(0, 15)}.`)
+                        .setColor('BLURPLE')
+                        .addField('Join Rank:', `**${name}** was the ${getJoinRank(interaction.options._hoistedOptions[0].value, interaction.guild)} user to join on ${interaction.options._hoistedOptions[0].member.joinedAt.toString().slice(0, 15)}.`)
                         //add feild here with karma info shizzle
+                    interaction.reply({embeds: [embed]});
                 }
             break;
 
@@ -280,14 +284,31 @@ Object.defineProperty(Array.prototype, 'chunk_inefficient', {
 });
 
 function getJoinRank(ID, guild) { 
-    if (!guild.member(ID)) return; 
+    if (!guild.members.cache.get(ID)) return; 
+    let idx = -1;
+    guild.members.cache.sorted((a, b) => a.joinedAt - b.joinedAt).reduce((accum, cur, curKey, col) => {
+        accum ++;
+        if (curKey === ID) {
+            idx = accum;
+        }
+        return accum;
+    }, -1);
 
-    let arr = guild.members.cache.array(); 
-    arr.sort((a, b) => a.joinedAt - b.joinedAt); 
+    return `${idx}${getNumSuffix(idx)}`;
+}
 
-    for (let i = 0; i < arr.length; i++) { 
-        if (arr[i].id == ID) return i; 
-    }
+function getNumSuffix(num) {
+    let lastDigit = num % 10;
+    let last2Digits = num % 100;
+    const digitToOrdinalSuffix = {
+        1: 'st',
+        2: 'nd',
+        3: 'rd'
+      }
+    return lastDigit === 0 || lastDigit > 3 ||
+          last2Digits >= 11 && last2Digits <= 13
+            ? 'th'
+            : digitToOrdinalSuffix[lastDigit]
 }
 
 bot.login(token);
