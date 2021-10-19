@@ -45,12 +45,37 @@ const roles = {
 // let y = process.openStdin();
 // y.addListener('data', res => {
 //     let x = res.toString().trim().split(/ +/g);
-//     bot.channels.cache.get('899706405077000242').send(x.join(' '));
+//     bot.channels.cache.get('899501718507757631').send(x.join(' '));
 // })
 
 bot.on('ready', () => {
     bot.user.setActivity('that AP grind | /help');
     console.log('Bot Online!')
+})
+
+bot.on('guildMemberUpdate', (oldMember, newMember) => {
+    if (oldMember._roles.length != newMember._roles.length) {
+        if (roles[oldMember._roles.filter(x => !newMember._roles.includes(x))[0]] != undefined) {
+            //removed role
+            for (const [key, value] of Object.entries(object1)) {
+                if (value.id === oldMember._roles.filter(x => !newMember._roles.includes(x))[0]) {
+                    let y = db.getClass(key);
+                    y.splice(y.indexOf(newMember.id), 1);
+                    db.writeClass(key, y);
+                }    
+            }
+        } else if (roles[newMember._roles.filter(x => !oldMember._roles.includes(x))[0]] != undefined) {
+            //added role
+            for (const [key, value] of Object.entries(object1)) {
+                if (value.id === newMember._roles.filter(x => !oldMember._roles.includes(x))[0]) {
+                    let y = db.getClass(key);
+                    y.push(newMember.id);
+                    db.writeClass(key, y);
+                }    
+            }
+        }
+    }
+
 })
 
 bot.on('messageCreate', message => {
@@ -168,7 +193,7 @@ bot.on('interactionCreate', interaction => {
                     interaction.reply('Please provide a link to a Quizlet study set.');
                 } else {
                     db.writeQuizlet(interaction.options._hoistedOptions[0].value, interaction.options._hoistedOptions[1].value);
-                    interaction.reply(`Quizlet saved for **${roles[interaction.options._hoistedOptions[0].value].name}** as **${interaction.options._hoistedOptions[1].value.split('/')[5]}**.`)
+                    interaction.reply(`Quizlet saved for **${roles[interaction.options._hoistedOptions[0].value].name}** as **${interaction.options._hoistedOptions[1].value.split('/')[interaction.options._hoistedOptions[1].value.split('/').length - 2]}**.`)
                 }
             break;
 
