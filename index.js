@@ -288,6 +288,27 @@ bot.on('interactionCreate', interaction => {
                     }
                 }
             break;
+
+            case 'remind':
+                let valid = true;
+                if (interaction.options._hoistedOptions.length === 3) {
+                    if (!/^\d{2}\/\d{2}\/\d{2}$/.test(interaction.options._hoistedOptions[1].value)) {
+                        valid = false;
+                        interaction.reply({ content: 'Please provide a valid date.', ephemeral: true });
+                    } else if (!/((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))/.test(interaction.options._hoistedOptions[2].value)) {
+                        valid = false;
+                        interaction.reply({ content: 'Please provide a valid time.', ephemeral: true });
+                    }
+                } else {
+                    if (!/^\d{2}\/\d{2}\/\d{2}$/.test(interaction.options._hoistedOptions[1].value)) {
+                        valid = false;
+                        interaction.reply({ content: 'Please provide a valid date.', ephemeral: true });
+                    }
+                }
+                if (valid) {
+                    //
+                }
+            break;
         }
     }
 });
