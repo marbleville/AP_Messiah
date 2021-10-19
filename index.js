@@ -55,18 +55,28 @@ bot.on('ready', () => {
 
 bot.on('guildMemberUpdate', (oldMember, newMember) => {
     if (oldMember._roles.length != newMember._roles.length) {
-        if (roles[oldMember._roles.filter(x => !newMember._roles.includes(x))[0]] != undefined) {
+        let roleName1 = '';
+        let roleName2 = '';
+        for (const [key, value] of Object.entries(roles)) {
+            if (value.id === oldMember._roles.filter(x => !newMember._roles.includes(x))[0] ) {
+                roleName1 = key;
+            }
+            if (value. id === newMember._roles.filter(x => !oldMember._roles.includes(x))[0]) {
+                roleName2 = key;
+            }
+        }
+        if (roles[roleName1] != undefined) {
             //removed role
-            for (const [key, value] of Object.entries(object1)) {
+            for (const [key, value] of Object.entries(roles)) {
                 if (value.id === oldMember._roles.filter(x => !newMember._roles.includes(x))[0]) {
                     let y = db.getClass(key);
                     y.splice(y.indexOf(newMember.id), 1);
                     db.writeClass(key, y);
                 }    
             }
-        } else if (roles[newMember._roles.filter(x => !oldMember._roles.includes(x))[0]] != undefined) {
+        } else if (roles[roleName2] != undefined) {
             //added role
-            for (const [key, value] of Object.entries(object1)) {
+            for (const [key, value] of Object.entries(roles)) {
                 if (value.id === newMember._roles.filter(x => !oldMember._roles.includes(x))[0]) {
                     let y = db.getClass(key);
                     y.push(newMember.id);
