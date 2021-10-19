@@ -9,7 +9,7 @@ const bot = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEM
     Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES] });
 const token = process.env.TOKEN;
 
-const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+const config = JSON.parse(fs.readFileSync('./other/config.json', 'utf8'));
 
 
 
@@ -20,7 +20,7 @@ const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 // fs.writeFileSync('./model.json', JSON.stringify(exported));
 
 let net = new NeuralNetwork();
-net.fromJSON(JSON.parse(fs.readFileSync('./model.json')));
+net.fromJSON(JSON.parse(fs.readFileSync('./other/model.json')));
 
 let c = fs.readdirSync('./classes');
 let mat = fs.readdirSync('./materials');
