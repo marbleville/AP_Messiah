@@ -190,12 +190,27 @@ bot.on('interactionCreate', interaction => {
             break;
 
             case 'info':
-                const Embed3 = new MessageEmbed()
-                    .setTitle('**Info about AP Discord Server**')
-                    .addField('Get Help:', 'Class of 2022 Advanced Placement Discord server serves as a hub for study materials and help from fellow AP students.')
-                    .addField('Features:', 'This bot tracks students in this server of all AP classes offered by MHS with `/classes`, `/enroll`, and `/unenroll`. It also keeps track of different study materials that members have posted with `/addquizlet` and `/getquizlet`.')
-                    .addField('\u200B', 'Class of 2022 Advanced Placement managed by <@703028154431832094>. Bot written by <@464156671024037918>. Credit for original idea goes to <@371318217454387211>. ')
-                interaction.reply({ embeds: [Embed3] });
+                console.log(interaction.options);
+                if (interaction.options._subcommand === 'server') {
+                    //add paginnation with stats on server
+                    const Embed3 = new MessageEmbed()
+                        .setTitle('**Info about AP Discord Server**')
+                        .addField('Get Help:', 'Class of 2022 Advanced Placement Discord server serves as a hub for study materials and help from fellow AP students.')
+                        .addField('Features:', 'This bot tracks students in this server of all AP classes offered by MHS with `/classes`, `/enroll`, and `/unenroll`. It also keeps track of different study materials that members have posted with `/quizlet`.')
+                        .addField('\u200B', 'Class of 2022 Advanced Placement managed by <@703028154431832094>. Bot written by <@464156671024037918>. Credit for original idea goes to <@371318217454387211>. ')
+                    interaction.reply({ embeds: [Embed3] });
+                } else if (interaction.options._subcommand === 'user') {
+                    let name = '';
+                    if (interaction.options._hoistedOptions[0].member.nickname != undefined) {
+                        name = interaction.options._hoistedOptions[0].member.nickname;
+                    } else {
+                        name = interaction.options._hoistedOptions[0].user.usernname;
+                    }
+                    const embed = new MessageEmbed()
+                        .setTitle(`**${name}** information`)
+                        .addField('Join Rank:', `${name} was the ${getJoinRank(interaction.options._hoistedOptions[0].value, interaction.guild)} user to join on ${interaction.options._hoistedOptions[0].member.joinedAt.toString().slice(0, 15)}.`)
+                        //add feild here with karma info shizzle
+                }
             break;
 
             case 'quizlet':
@@ -262,6 +277,17 @@ Object.defineProperty(Array.prototype, 'chunk_inefficient', {
         })
       );
     }
-  });
+});
+
+function getJoinRank(ID, guild) { 
+    if (!guild.member(ID)) return; 
+
+    let arr = guild.members.cache.array(); 
+    arr.sort((a, b) => a.joinedAt - b.joinedAt); 
+
+    for (let i = 0; i < arr.length; i++) { 
+        if (arr[i].id == ID) return i; 
+    }
+}
 
 bot.login(token);

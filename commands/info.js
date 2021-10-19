@@ -16,6 +16,7 @@ const data = new SlashCommandBuilder()
 				option
 					.setName('target')
 					.setDescription('The user you wannt information about')
+					.setRequired(true)
 			)
 	)
 	
