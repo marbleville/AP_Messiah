@@ -306,7 +306,24 @@ bot.on('interactionCreate', interaction => {
                     }
                 }
                 if (valid) {
-                    //
+                    let reminder = {
+                        class: roles[interaction.options._hoistedOptions[0].value].id,
+                        date: interaction.options._hoistedOptions[1].value,
+                        time: ''
+                    }
+                    if (interaction.options._hoistedOptions.length === 3) {
+                        reminder.time = interaction.options._hoistedOptions[2].value;
+                    }
+                    let reminders = JSON.parse(fs.readFileSync('./other/reminders', 'utf8'));
+                    reminders.push(reminder);
+                    fs.writeFileSync('./other/reminders', JSON.stringify(reminders));
+                    let dateTime = '';
+                    if (interaction.options._hoistedOptions.length === 3) {
+                        dateTime += `${interaction.options._hoistedOptions[1].value} at ${interaction.options._hoistedOptions[2].value}`;
+                    } else {
+                        dateTime += `${interaction.options._hoistedOptions[1].value}`;
+                    }
+                    interaction.reply(`${roles[interaction.options._hoistedOptions[0].value].name} reminder set for ${dateTime}`);
                 }
             break;
         }
@@ -350,6 +367,25 @@ function getNumSuffix(num) {
           last2Digits >= 11 && last2Digits <= 13
             ? 'th'
             : digitToOrdinalSuffix[lastDigit]
+}
+
+function checkReminder() {
+    let response = [];
+    let reminders = JSON.parse(fs.readFileSync('./other/reminders', 'utf8'));
+    let UTC;
+    reminders.forEach(r => {
+        if (r.time != '') {
+            let time = r.date.concat(` ${r.time}`).split(/\/|\:| /);
+            if (time[5] === 'pm') {
+                time[3] += 12
+            } 
+            UTC = new Date(Date.UTC(time[2], time[0], time[1], time[3], time[4]));
+        } else {
+            let time = r.date.split('/');
+            UTC = new Date(Date.UTC(time[2], time[0], time[1], 8, 0));
+        }
+        //conslle .log this shizzle to ocnfirm UTC
+    })
 }
 
 bot.login(token);

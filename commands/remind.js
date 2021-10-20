@@ -37,7 +37,7 @@ const data = new SlashCommandBuilder()
 	.addStringOption(time =>
 		time 
 			.setName('time')
-			.setDescription('Optional time for this reminder. (HH:MM am/pm)')	
+			.setDescription('Optional time for this reminder; defult is 8:00 am. (HH:MM am/pm)')	
 	)
 	
 module.exports = { data }
