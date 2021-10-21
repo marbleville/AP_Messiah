@@ -289,11 +289,11 @@ bot.on('interactionCreate', interaction => {
 
             case 'remind':
                 let valid = true;
-                if (interaction.options._hoistedOptions.length === 3) {
-                    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(interaction.options._hoistedOptions[1].value)) {
+                if (interaction.options._hoistedOptions[1].value.split(' ').length === 2) {
+                    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(interaction.options._hoistedOptions[1].value.split(' ')[0])) {
                         valid = false;
                         interaction.reply({ content: 'Please provide a valid date.', ephemeral: true });
-                    } else if (!/((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))/.test(interaction.options._hoistedOptions[2].value)) {
+                    } else if (!/((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))/.test(interaction.options._hoistedOptions[1].value.split(' ')[1])) {
                         valid = false;
                         interaction.reply({ content: 'Please provide a valid time.', ephemeral: true });
                     }
@@ -306,18 +306,19 @@ bot.on('interactionCreate', interaction => {
                 if (valid) {
                     let reminder = {
                         class: roles[interaction.options._hoistedOptions[0].value].id,
-                        date: interaction.options._hoistedOptions[1].value,
-                        time: ''
+                        date: interaction.options._hoistedOptions[1].value.split(' ')[0],
+                        time: '',
+                        message: interaction.options._hoistedOptions[2].value
                     }
-                    if (interaction.options._hoistedOptions.length === 3) {
-                        reminder.time = interaction.options._hoistedOptions[2].value;
+                    if (interaction.options._hoistedOptions[1].value.split(' ').length === 2) {
+                        reminder.time = interaction.options._hoistedOptions[1].value.split(' ')[1];
                     }
                     let reminders = JSON.parse(fs.readFileSync('./other/reminders', 'utf8'));
                     reminders.push(reminder);
                     fs.writeFileSync('./other/reminders', JSON.stringify(reminders));
                     let dateTime = '';
-                    if (interaction.options._hoistedOptions.length === 3) {
-                        dateTime += `${interaction.options._hoistedOptions[1].value} at ${interaction.options._hoistedOptions[2].value}`;
+                    if (interaction.options._hoistedOptions[1].value.split(' ') === 2) {
+                        dateTime += `${interaction.options._hoistedOptions[1].value.split(' ')[0]} at ${interaction.options._hoistedOptions[1].value.split(' ')[1]}`;
                     } else {
                         dateTime += `${interaction.options._hoistedOptions[1].value}`;
                     }

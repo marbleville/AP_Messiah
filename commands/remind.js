@@ -30,14 +30,15 @@ const data = new SlashCommandBuilder()
 	)
 	.addStringOption(month => 
 		month
-			.setName('date')
-			.setDescription('Which date this reminder is for. (MM/DD or MM/DD/YYYY)')
+			.setName('date/time')
+			.setDescription('Which date and time this reminder is for (default time 8:00 am). (MM/DD/YYYY HH:MM am/pm)')
 			.setRequired(true)
 	)
 	.addStringOption(time =>
 		time 
-			.setName('time')
-			.setDescription('Optional time for this reminder; defult is 8:00 am. (HH:MM am/pm)')	
+			.setName('message')
+			.setDescription('The message to send wit this reminder.')
+			.setRequired(true)	
 	)
 	
 module.exports = { data }
