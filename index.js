@@ -8,20 +8,21 @@ const { Interaction } = require('discord.js');
 const bot = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, 
     Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES] });
 const token = process.env.TOKEN;
-
 const config = JSON.parse(fs.readFileSync('./other/config.json', 'utf8'));
-
+let net = new NeuralNetwork()
+net.fromJSON(JSON.parse(fs.readFileSync('./other/model.json')));
 // const corpus = require('./corpus.json');
 // let net = new NeuralNetwork();
 // net.train(corpus);
 // const exported = net.toJSON();
 // fs.writeFileSync('./model.json', JSON.stringify(exported));
 
-let net = new NeuralNetwork();
-net.fromJSON(JSON.parse(fs.readFileSync('./other/model.json')));
+let emoji = ['📊', '📈', '💻', '🖥️', '🤾‍♂️', '🏋️‍♂️', '🔥', '🌳', '🖊️', '📖', '🏛️', '⚜️', '🌎', '🎨', '🛡️', '🐮', '🇫🇷', '🎵'];
 
-// let c = fs.readdirSync('./classes');
-// let mat = fs.readdirSync('./materials');
+const er = new MessageEmbed()
+    .setTitle('**Enroll in Classes:**')
+    .addField('React below to join a class.', '📊: AP Statistics\n📈:AP Calculus AB/BC\n💻: AP CSA\n🖥️: AP CSP\n🤾‍♂️: AP Physics\n🏋️‍♂️: AP Biology\n🔥: AP Chemistry\n🌳: AP Environment\n🖊️: AP Language\n📖: AP Literature\n🏛️: AP Government\n⚜️: AP Euro\n🌎: APUSH\n🎨: AP Art\n🛡️: AP Latin\n🐮: AP Spanish\n🇫🇷: AP French\n🎵: AP Music Theory')
+    .setColor('BLURPLE')
 
 //checks reminders every minute
 setInterval(() => {
@@ -100,6 +101,13 @@ bot.on('guildMemberUpdate', (oldMember, newMember) => {
 })
 
 bot.on('messageCreate', message => {
+    if (!message.user.bot) {
+        message.channel.send({ embeds: [er] }).then(message => {
+            emoji.forEach(e => {
+                message.react(e);
+            })
+        })
+    }
     let m = {};
     let o = message.content.toLowerCase().split(' ');
     o.forEach(element => {
