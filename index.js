@@ -11,8 +11,6 @@ const token = process.env.TOKEN;
 
 const config = JSON.parse(fs.readFileSync('./other/config.json', 'utf8'));
 
-
-
 // const corpus = require('./corpus.json');
 // let net = new NeuralNetwork();
 // net.train(corpus);
@@ -292,7 +290,7 @@ bot.on('interactionCreate', interaction => {
             case 'remind':
                 let valid = true;
                 if (interaction.options._hoistedOptions.length === 3) {
-                    if (!/^\d{2}\/\d{2}\/\d{2}$/.test(interaction.options._hoistedOptions[1].value)) {
+                    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(interaction.options._hoistedOptions[1].value)) {
                         valid = false;
                         interaction.reply({ content: 'Please provide a valid date.', ephemeral: true });
                     } else if (!/((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))/.test(interaction.options._hoistedOptions[2].value)) {
@@ -300,7 +298,7 @@ bot.on('interactionCreate', interaction => {
                         interaction.reply({ content: 'Please provide a valid time.', ephemeral: true });
                     }
                 } else {
-                    if (!/^\d{2}\/\d{2}\/\d{2}$/.test(interaction.options._hoistedOptions[1].value)) {
+                    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(interaction.options._hoistedOptions[1].value)) {
                         valid = false;
                         interaction.reply({ content: 'Please provide a valid date.', ephemeral: true });
                     }
@@ -369,6 +367,7 @@ function getNumSuffix(num) {
             : digitToOrdinalSuffix[lastDigit]
 }
 
+//returns an array of all reminders that need action
 function checkReminder() {
     let response = [];
     let reminders = JSON.parse(fs.readFileSync('./other/reminders', 'utf8'));
@@ -379,10 +378,10 @@ function checkReminder() {
             if (time[5] === 'pm') {
                 time[3] += 12
             } 
-            UTC = new Date(Date.UTC(time[2], time[0], time[1], time[3], time[4]));
+            UTC = new Date(Date.UTC(time[2], time[0], time[1], time[3], time[4])).getTime();
         } else {
             let time = r.date.split('/');
-            UTC = new Date(Date.UTC(time[2], time[0], time[1], 8, 0));
+            UTC = new Date(Date.UTC(time[2], time[0], time[1], 8, 0)).getTime();
         }
         //conslle .log this shizzle to ocnfirm UTC
     })

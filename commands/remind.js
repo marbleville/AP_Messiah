@@ -31,7 +31,7 @@ const data = new SlashCommandBuilder()
 	.addStringOption(month => 
 		month
 			.setName('date')
-			.setDescription('Which date this reminder is for. (MM/DD or MM/DD/YY)')
+			.setDescription('Which date this reminder is for. (MM/DD or MM/DD/YYYY)')
 			.setRequired(true)
 	)
 	.addStringOption(time =>
