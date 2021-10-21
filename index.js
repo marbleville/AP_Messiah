@@ -383,7 +383,10 @@ function checkReminder() {
             let time = r.date.split('/');
             UTC = new Date(Date.UTC(time[2], time[0], time[1], 8, 0)).getTime();
         }
-        //conslle .log this shizzle to ocnfirm UTC
+        if (Date.now() > UTC) {
+            //I FUCKING FORGOT THE REMINDER MESSAGE || TIME FOR REFACTOR!!!!!!
+            response.push();
+        }
     })
 }
 
