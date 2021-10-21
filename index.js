@@ -20,8 +20,15 @@ const config = JSON.parse(fs.readFileSync('./other/config.json', 'utf8'));
 let net = new NeuralNetwork();
 net.fromJSON(JSON.parse(fs.readFileSync('./other/model.json')));
 
-let c = fs.readdirSync('./classes');
-let mat = fs.readdirSync('./materials');
+// let c = fs.readdirSync('./classes');
+// let mat = fs.readdirSync('./materials');
+
+//checks reminders every minute
+setInterval(() => {
+    db.getNeededReminders().forEach(reminder => {
+        bot.guild.channels.cahce.get('900746543672463390').send(`<@${reminder.id}>, ${reminder.message} at ${reminder.time}`)
+    })
+}, 60000)
 
 //makes tracking roles and full names easier
 const roles = {
@@ -74,7 +81,7 @@ bot.on('guildMemberUpdate', (oldMember, newMember) => {
             for (const [key, value] of Object.entries(roles)) {
                 if (value.id === oldMember._roles.filter(x => !newMember._roles.includes(x))[0]) {
                     let y = db.getClass(key);
-                    y.splice(y.indexOf(newMember.id), 1);
+                    let rmv = y.splice(y.indexOf(newMember.id), 1);
                     db.writeClass(key, y);
                 }    
             }
@@ -288,41 +295,49 @@ bot.on('interactionCreate', interaction => {
             break;
 
             case 'remind':
-                let valid = true;
-                if (interaction.options._hoistedOptions[1].value.split(' ').length === 2) {
-                    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(interaction.options._hoistedOptions[1].value.split(' ')[0])) {
-                        valid = false;
-                        interaction.reply({ content: 'Please provide a valid date.', ephemeral: true });
-                    } else if (!/((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))/.test(interaction.options._hoistedOptions[1].value.split(' ')[1])) {
-                        valid = false;
-                        interaction.reply({ content: 'Please provide a valid time.', ephemeral: true });
-                    }
-                } else {
-                    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(interaction.options._hoistedOptions[1].value)) {
-                        valid = false;
-                        interaction.reply({ content: 'Please provide a valid date.', ephemeral: true });
-                    }
-                }
-                if (valid) {
-                    let reminder = {
-                        class: roles[interaction.options._hoistedOptions[0].value].id,
-                        date: interaction.options._hoistedOptions[1].value.split(' ')[0],
-                        time: '',
-                        message: interaction.options._hoistedOptions[2].value
-                    }
+                if (interaction.options._subcommand === 'add') {
+                    let valid = true;
                     if (interaction.options._hoistedOptions[1].value.split(' ').length === 2) {
-                        reminder.time = interaction.options._hoistedOptions[1].value.split(' ')[1];
-                    }
-                    let reminders = JSON.parse(fs.readFileSync('./other/reminders', 'utf8'));
-                    reminders.push(reminder);
-                    fs.writeFileSync('./other/reminders', JSON.stringify(reminders));
-                    let dateTime = '';
-                    if (interaction.options._hoistedOptions[1].value.split(' ') === 2) {
-                        dateTime += `${interaction.options._hoistedOptions[1].value.split(' ')[0]} at ${interaction.options._hoistedOptions[1].value.split(' ')[1]}`;
+                        if (!/^\d{2}\/\d{2}\/\d{4}$/.test(interaction.options._hoistedOptions[1].value.split(' ')[0])) {
+                            valid = false;
+                            interaction.reply({ content: 'Please provide a valid date.', ephemeral: true });
+                        } else if (!/((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))/.test(interaction.options._hoistedOptions[1].value.split(' ')[1])) {
+                            valid = false;
+                            interaction.reply({ content: 'Please provide a valid time.', ephemeral: true });
+                        }
                     } else {
-                        dateTime += `${interaction.options._hoistedOptions[1].value}`;
+                        if (!/^\d{2}\/\d{2}\/\d{4}$/.test(interaction.options._hoistedOptions[1].value)) {
+                            valid = false;
+                            interaction.reply({ content: 'Please provide a valid date.', ephemeral: true });
+                        }
                     }
-                    interaction.reply(`${roles[interaction.options._hoistedOptions[0].value].name} reminder set for ${dateTime}`);
+                    if (valid) {
+                        let reminder = {
+                            class: roles[interaction.options._hoistedOptions[0].value].id,
+                            date: interaction.options._hoistedOptions[1].value.split(' ')[0],
+                            time: '',
+                            message: interaction.options._hoistedOptions[2].value
+                        }
+                        if (interaction.options._hoistedOptions[1].value.split(' ').length === 2) {
+                            reminder.time = interaction.options._hoistedOptions[1].value.split(' ')[1];
+                        }
+                        let reminders = JSON.parse(fs.readFileSync('./other/reminders', 'utf8'));
+                        reminders.push(reminder);
+                        fs.writeFileSync('./other/reminders', JSON.stringify(reminders));
+                        let dateTime = '';
+                        if (interaction.options._hoistedOptions[1].value.split(' ') === 2) {
+                            dateTime += `${interaction.options._hoistedOptions[1].value.split(' ')[0]} at ${interaction.options._hoistedOptions[1].value.split(' ')[1]}`;
+                        } else {
+                            dateTime += `${interaction.options._hoistedOptions[1].value}`;
+                        }
+                        interaction.reply(`${roles[interaction.options._hoistedOptions[0].value].name} reminder set for ${dateTime}`);
+                    }
+                } else if (interaction.options._subcommand === 'remove') {
+                    if (db.removeReminder(roles[interaction.options._hoistedOptions[0].value].id, interaction.options._hoistedOptions[1].value)) {
+                        interaction.reply(`Removed reminder for **${roles[interaction.options._hoistedOptions[0].value].name}**.`)
+                    } else {
+                        interaction.reply(`No such reminder for **${roles[interaction.options._hoistedOptions[0].value].name}**.`)
+                    }
                 }
             break;
         }
@@ -366,29 +381,6 @@ function getNumSuffix(num) {
           last2Digits >= 11 && last2Digits <= 13
             ? 'th'
             : digitToOrdinalSuffix[lastDigit]
-}
-
-//returns an array of all reminders that need action
-function checkReminder() {
-    let response = [];
-    let reminders = JSON.parse(fs.readFileSync('./other/reminders', 'utf8'));
-    let UTC;
-    reminders.forEach(r => {
-        if (r.time != '') {
-            let time = r.date.concat(` ${r.time}`).split(/\/|\:| /);
-            if (time[5] === 'pm') {
-                time[3] += 12
-            } 
-            UTC = new Date(Date.UTC(time[2], time[0], time[1], time[3], time[4])).getTime();
-        } else {
-            let time = r.date.split('/');
-            UTC = new Date(Date.UTC(time[2], time[0], time[1], 8, 0)).getTime();
-        }
-        if (Date.now() > UTC) {
-            //I FUCKING FORGOT THE REMINDER MESSAGE || TIME FOR REFACTOR!!!!!!
-            response.push();
-        }
-    })
 }
 
 bot.login(token);

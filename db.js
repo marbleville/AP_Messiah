@@ -68,4 +68,49 @@ function getQuizletLinks(c) {
     }
 }
 
-module.exports = { writeClass, getClass, getAllClasses, writeQuizlet, getQuizletLink, getQuizletLinks }
+//returns an array of all reminders that need action
+function getNeededReminders() {
+    let response = [];
+    let reminders = JSON.parse(fs.readFileSync('./other/reminders', 'utf8'));
+    let UTC;
+    reminders.forEach(r => {
+        if (r.time != '') {
+            let time = r.date.concat(` ${r.time}`).split(/\/|\:| /);
+            if (time[5] === 'pm') {
+                time[3] += 12
+            } 
+            UTC = new Date(Date.UTC(time[2], time[0], time[1], time[3], time[4])).getTime();
+        } else {
+            let time = r.date.split('/');
+            UTC = new Date(Date.UTC(time[2], time[0], time[1], 8, 0)).getTime();
+        }
+        if (Date.now() > UTC) {
+            //TEHE
+            response.push({id: r.class, message: r.message, time: UTC.toString() });
+        }
+    })
+    return response;
+}
+
+//this is a little weird but okay
+function removeReminder(c, date) {
+    let r = false;
+    let idx = -1;
+    let save = -1;
+    let rem = JSON.parse(fs.readFileSync('./other/reminders', 'utf8'))
+    rem.forEach(reminder => {
+        idx++;
+        if (reminder.class === c && (reminder.date.concat(` ${reminder.time}` === date))) {
+            save = idx;
+        }
+    })
+    if (save != -1) {
+        let rmv = rem.splice(save, 1);
+        fs.writeFileSync('./other/reminders', JSON.stringify(rem));
+        r = true;     
+    }
+    return r;
+}
+
+
+module.exports = { writeClass, getClass, getAllClasses, writeQuizlet, getQuizletLink, getQuizletLinks, getNeededReminders, removeReminder }
