@@ -71,7 +71,7 @@ function getQuizletLinks(c) {
 //returns an array of all reminders that need action
 function getNeededReminders() {
     let response = [];
-    let reminders = JSON.parse(fs.readFileSync('./other/reminders', 'utf8'));
+    let reminders = JSON.parse(fs.readFileSync('./other/reminders.json', 'utf8'));
     let UTC;
     reminders.forEach(r => {
         if (r.time != '') {
@@ -97,7 +97,7 @@ function removeReminder(c, date) {
     let r = false;
     let idx = -1;
     let save = -1;
-    let rem = JSON.parse(fs.readFileSync('./other/reminders', 'utf8'))
+    let rem = JSON.parse(fs.readFileSync('./other/reminders.json', 'utf8'))
     rem.forEach(reminder => {
         idx++;
         if (reminder.class === c && (reminder.date.concat(` ${reminder.time}` === date))) {

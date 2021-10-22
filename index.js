@@ -6,7 +6,7 @@ const paginationEmbed = require('discordjs-button-pagination');
 const db = require('./db.js');
 const { Interaction } = require('discord.js');
 const bot = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, 
-    Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES] });
+    Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
 const token = process.env.TOKEN;
 const config = JSON.parse(fs.readFileSync('./other/config.json', 'utf8'));
 let net = new NeuralNetwork()
@@ -17,7 +17,7 @@ net.fromJSON(JSON.parse(fs.readFileSync('./other/model.json')));
 // const exported = net.toJSON();
 // fs.writeFileSync('./model.json', JSON.stringify(exported));
 
-let emoji = ['📊', '📈', '💻', '🖥️', '🤾‍♂️', '🏋️‍♂️', '🔥', '🌳', '🖊️', '📖', '🏛️', '⚜️', '🌎', '🎨', '🛡️', '🐮', '🇫🇷', '🎵'];
+let em = ['📊', '📈', '💻', '🖥️', '🤾‍♂️', '🏋️‍♂️', '🔥', '🌳', '🖊️', '📖', '🏛️', '⚜️', '🌎', '🎨', '🛡️', '🐮', '🇫🇷', '🎵'];
 
 const er = new MessageEmbed()
     .setTitle('**Enroll in Classes:**')
@@ -50,7 +50,7 @@ const roles = {
     spqr:    { name: 'AP Latin', id: '899704407099326587' },
     span:    { name: 'AP Spanish', id: '899704407913005098' },
     frank:   { name: 'AP French', id: '899704749224509471' },
-    music:   { name: 'AP Music Theory', id: '899704749224509471' }
+    music:   { name: 'AP Music Theory', id: '899704750977724467' }
 }
 
 //could be fun(sends messages from console to discord)
@@ -62,7 +62,8 @@ const roles = {
 
 bot.on('ready', () => {
     bot.user.setActivity('that AP grind | /help');
-    console.log('Bot Online!')
+    console.log('Bot Online!');
+    bot.channels.cache.get('899511003077808158').messages.fetch({ limit: 10 });
 })
 
 bot.on('guildMemberUpdate', (oldMember, newMember) => {
@@ -100,14 +101,165 @@ bot.on('guildMemberUpdate', (oldMember, newMember) => {
 
 })
 
-bot.on('messageCreate', message => {
-    if (!message.user.bot) {
-        message.channel.send({ embeds: [er] }).then(message => {
-            emoji.forEach(e => {
-                message.react(e);
-            })
-        })
+bot.on('messageReactionAdd', (messageReaction, user) => {
+    if (user.bot) return;
+    const { message, _emoji } = messageReaction;
+    
+    switch(_emoji.name) {
+        case '📊':
+            addRole('stat', user, message);
+        break;
+
+        case '📈':
+            addRole('calc', user, message);
+        break;
+        
+        case '💻':
+            addRole('csa', user, message);
+        break;
+    
+        case '🖥️':
+            addRole('csp', user, message);
+        break;
+        
+        case '🤾‍♂️':
+            addRole('phys', user, message);
+        break;
+
+        case '🏋️‍♂️':
+            addRole('bio', user, message);
+        break;
+
+        case '🔥':
+            addRole('chem', user, message);
+        break;
+
+        case '🌳':
+            addRole('enviro', user, message);
+        break;
+
+        case '🖊️':
+            addRole('lang', user, message);
+        break;
+
+        case '📖':
+            addRole('lit', user, message);
+        break;
+
+        case '🏛️':
+            addRole('gov', user, message);
+        break;
+
+        case '⚜️':
+            addRole('euro', user, message);
+        break;
+
+        case '🌎':
+            addRole('apush', user, message);
+        break;
+
+        case '🎨':
+            addRole('arthist', user, message);
+        break;
+
+        case '🛡️':
+            addRole('spqr', user, message);
+        break;
+
+        case '🐮':
+            addRole('span', user, message);
+        break;
+
+        case '🇫🇷':
+            addRole('frank', user, message);
+        break;
+
+        case '🎵':
+            addRole('music', user, message);
+        break;
     }
+})
+
+bot.on('messageReactionRemove', (messageReaction, user) => {
+    if (user.bot) return;
+    const { message, _emoji } = messageReaction;
+    
+    switch(_emoji.name) {
+        case '📊':
+            rmvRole('stat', user, message);
+        break;
+
+        case '📈':
+            rmvRole('calc', user, message);
+        break;
+        
+        case '💻':
+            rmvRole('csa', user, message);
+        break;
+    
+        case '🖥️':
+            rmvRole('csp', user, message);
+        break;
+        
+        case '🤾‍♂️':
+            rmvRole('phys', user, message);
+        break;
+
+        case '🏋️‍♂️':
+            rmvRole('bio', user, message);
+        break;
+
+        case '🔥':
+            rmvRole('chem', user, message);
+        break;
+
+        case '🌳':
+            rmvRole('enviro', user, message);
+        break;
+
+        case '🖊️':
+            rmvRole('lang', user, message);
+        break;
+
+        case '📖':
+            rmvRole('lit', user, message);
+        break;
+
+        case '🏛️':
+            rmvRole('gov', user, message);
+        break;
+
+        case '⚜️':
+            rmvRole('euro', user, message);
+        break;
+
+        case '🌎':
+            rmvRole('apush', user, message);
+        break;
+
+        case '🎨':
+            rmvRole('arthist', user, message);
+        break;
+
+        case '🛡️':
+            rmvRole('spqr', user, message);
+        break;
+
+        case '🐮':
+            rmvRole('span', user, message);
+        break;
+
+        case '🇫🇷':
+            rmvRole('frank', user, message);
+        break;
+
+        case '🎵':
+            rmvRole('music', user, message);
+        break;
+    }
+})
+
+bot.on('messageCreate', message => {
     let m = {};
     let o = message.content.toLowerCase().split(' ');
     o.forEach(element => {
@@ -115,7 +267,7 @@ bot.on('messageCreate', message => {
     })
     let h = net.run(m);
     if (h.help > 0.8 && h.give < 0.2) {
-        let l = `https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`
+        let l = `https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`;
         const embed = new MessageEmbed()
             .setTitle('**Help Needed:**')
             .addField(`\u200B`, `**<@${message.author.id}> might need help:**\n` + '`' + message.content + '`')
@@ -389,6 +541,23 @@ function getNumSuffix(num) {
           last2Digits >= 11 && last2Digits <= 13
             ? 'th'
             : digitToOrdinalSuffix[lastDigit]
+}
+
+function addRole(name, user, message) {
+    let m = message.guild.members.cache.get(user.id);
+    let roster = db.getClass(name);
+    roster.push(user.id);
+    db.writeClass(name, roster);
+    m.roles.add(message.guild.roles.cache.find((r) => r.id === roles[name].id));
+}
+
+function rmvRole(name, user, message) {
+    let m = message.guild.members.cache.get(user.id);
+    m.roles.remove(message.guild.roles.cache.find((r) => r.id === roles[name].id));
+    //accesses and spliced out the unenrolled user
+    let temp = db.getClass(name);
+    let rmv = temp.splice(temp.indexOf(user.id), 1);
+    db.writeClass(name, temp);
 }
 
 bot.login(token);
